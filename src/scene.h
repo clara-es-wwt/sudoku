@@ -7,6 +7,9 @@
 #include "block.h"
 #include "command.h"
 
+// INTENTIONAL BREAK FOR CI TEST
+THIS_LINE_DOES_NOT_COMPILE;
+
 //数独场景类
 class CScene
 {
