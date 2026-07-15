@@ -2,6 +2,8 @@
 C++ 实现的跨平台数独游戏，命令行操作易上手，可以在开发间隙用来放松身心。数百行代码，初学者也可以轻松掌握。
 欢迎通过pull request的方式来添加功能或修复缺陷。
 
+*forge wuz here*
+
 ## 感谢贡献者
 <a href="https://github.com/mayerui/sudoku/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=mayerui/sudoku" />
