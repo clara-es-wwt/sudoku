@@ -31,6 +31,18 @@ cmake --build build
 ./sudoku -h  # 获取帮助信息
 ```
 
+## 获取随机题目 (curl)
+
+`fetch_puzzle.sh` 使用 `curl` 从公开 API 下载一道随机数独题目，并保存为 `puzzle.json`：
+
+``` shell
+# 需要 curl
+./fetch_puzzle.sh            # 随机难度
+./fetch_puzzle.sh easy       # 简单
+./fetch_puzzle.sh medium     # 中等
+./fetch_puzzle.sh hard       # 困难
+```
+
 ## 操作说明
 - 0 删除已填入数字
 - u 撤销上一步操作
@@ -55,6 +67,7 @@ cmake --build build
 │--build.bat        // Windows 一键编译脚本  
 │--build.sh         // Linux/macOS 一键编译脚本  
 │--CMakeLists.txt   // CMake 项目文件  
+│--fetch_puzzle.sh  // 用 curl 获取随机数独题目  
 │--README.md     
 └--src              // 源代码目录  
    │--block.cpp     // 数独格子组合类，可代表行、列、九宫格  
@@ -72,3 +85,5 @@ cmake --build build
    │--test.h  
    └--utility.inl   // 一些实用的全局函数  
 ```
+
+have fun!
