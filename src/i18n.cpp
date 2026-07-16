@@ -12,7 +12,7 @@ I18n::Dict english = {
     {I18n::Key::FILE_EXIST_ERROR, "This file is already exist."},
     {I18n::Key::CONTINUE, "Continue."},
     {I18n::Key::UNDO_ERROR, "No more action to undo."},
-    {I18n::Key::CONGRATULATION, "Congratulation! You Win!"},
+    {I18n::Key::CONGRATULATION, "Hello World! Congratulation! You Win!"},
     {I18n::Key::NOT_COMPLETED, "Sorry, not completed."},
     {I18n::Key::ASK_DIFFICULTY, "Select difficulty: 1 Easy 2 Normal 3 Hard"},
 };
@@ -26,7 +26,7 @@ I18n::Dict chinese = {
     {I18n::Key::FILE_EXIST_ERROR, "文件已存在"},
     {I18n::Key::CONTINUE, "继续"},
     {I18n::Key::UNDO_ERROR, "没有可以撤销的动作"},
-    {I18n::Key::CONGRATULATION, "恭喜! 你解开了谜题!"},
+    {I18n::Key::CONGRATULATION, "Hello World! 恭喜! 你解开了谜题!"},
     {I18n::Key::NOT_COMPLETED, "对不起, 还未完成"},
     {I18n::Key::ASK_DIFFICULTY, "设置难度: 1简单 2普通 3困难"},
 };
