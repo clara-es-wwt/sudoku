@@ -27,6 +27,63 @@ CScene::~CScene()
     if(keyMap) delete keyMap;
 }
 
+// Returns true if all 9 instances of `num` are correctly placed on the board.
+// A number is considered completed when it appears exactly 9 times and every
+// row, column, and 3x3 box that contains it is still valid (no duplicates).
+bool CScene::isNumberCompleted(int num) const
+{
+    int count = 0;
+    for (int i = 0; i < 81; ++i) {
+        if (_map[i].value == num)
+            ++count;
+    }
+    if (count != 9)
+        return false;
+
+    // Also verify no row/column/box has a duplicate of this number
+    // (reuse the existing block validity check for the whole board)
+    for (int row = 0; row < 9; ++row) {
+        if (!_row_block[row].isValid())
+            return false;
+    }
+    for (int col = 0; col < 9; ++col) {
+        if (!_column_block[col].isValid())
+            return false;
+    }
+    for (int r = 0; r < 3; ++r) {
+        for (int c = 0; c < 3; ++c) {
+            if (!_xy_block[r][c].isValid())
+                return false;
+        }
+    }
+    return true;
+}
+
+// Prints a row of selectable digits 1-9 below the grid.
+// Digits that are fully and correctly placed are shown in dark grey (greyed out).
+// The remaining digits are shown in their normal bright colour.
+void CScene::printNumberSelector() const
+{
+    std::cout << std::endl;
+    std::cout << "  ";
+    for (int num = 1; num <= 9; num++) {
+        if (isNumberCompleted(num)) {
+            // Greyed out — number is fully placed
+            std::cout << Color::Modifier(Color::BOLD, Color::BG_DEFAULT, Color::FG_DARK_GRAY)
+                      << num
+                      << Color::Modifier();
+        } else {
+            // Available — number still needs to be placed
+            std::cout << Color::Modifier(Color::BOLD, Color::BG_DEFAULT, Color::FG_WHITE)
+                      << num
+                      << Color::Modifier();
+        }
+        if (num < 9)
+            std::cout << "   ";
+    }
+    std::cout << std::endl;
+}
+
 void CScene::show() const
 {
     cls();
@@ -47,6 +104,8 @@ void CScene::show() const
         else block.print(-1, highlighted_num);
         printUnderline(row);
     }
+
+    printNumberSelector();
 }
 
 void CScene::setMode(KeyMode mode)
@@ -450,10 +509,9 @@ void CScene::generate()
 bool CScene::setPointValue(const point_t &stPoint, const int nValue)
 {
     auto point = _map[stPoint.x + stPoint.y * 9];
-    if (State::ERASED == point.state)
+    if (point.state == State::ERASED)
     {
-        _cur_point = stPoint;
-        setValue(nValue);
+        setValue(stPoint, nValue);
         return true;
     }
     else
