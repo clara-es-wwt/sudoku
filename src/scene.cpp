@@ -2,10 +2,13 @@
 
 #include <memory.h>
 
+#include <chrono>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -250,8 +253,23 @@ bool CScene::load(const char *filename) {
     return true;
 }
 
+std::string CScene::formatElapsed() const
+{
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - _start_time).count();
+    long long minutes = elapsed / 60;
+    long long seconds = elapsed % 60;
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(2) << minutes
+        << ":"
+        << std::setfill('0') << std::setw(2) << seconds;
+    return oss.str();
+}
+
 void CScene::play()
 {
+    _start_time = std::chrono::steady_clock::now();
+
     show();
 
     char key = '\0';
@@ -331,7 +349,10 @@ void CScene::play()
         else if (key == keyMap->ENTER)
         {
           if (isComplete()) {
-            message(I18n::Instance().Get(I18n::Key::CONGRATULATION));
+            std::string congrats = I18n::Instance().Get(I18n::Key::CONGRATULATION);
+            std::string timeLabel = I18n::Instance().Get(I18n::Key::TIME_ELAPSED);
+            message(congrats);
+            message(timeLabel + formatElapsed());
             getchar();
             exit(0);
           } else {
@@ -450,10 +471,9 @@ void CScene::generate()
 bool CScene::setPointValue(const point_t &stPoint, const int nValue)
 {
     auto point = _map[stPoint.x + stPoint.y * 9];
-    if (State::ERASED == point.state)
+    if (point.state == State::ERASED)
     {
-        _cur_point = stPoint;
-        setValue(nValue);
+        setValue(stPoint, nValue);
         return true;
     }
     else
