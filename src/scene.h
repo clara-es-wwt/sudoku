@@ -35,6 +35,8 @@ class CScene
     void setValue(const int);
     void setValue(const point_t &, const int);
     void printUnderline(int line_no = -1) const;
+    void printNumberSelector() const;
+    bool isNumberCompleted(int num) const;
 
 private:
     KeyMap *keyMap{};
