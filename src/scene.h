@@ -1,6 +1,7 @@
 ﻿#ifndef _SUDOKU_SCENE_H_
 #define _SUDOKU_SCENE_H_
 
+#include <chrono>
 #include <iostream>
 #include <vector>
 #include "common.h"
@@ -36,6 +37,8 @@ class CScene
     void setValue(const point_t &, const int);
     void printUnderline(int line_no = -1) const;
 
+    std::string formatElapsed() const;
+
 private:
     KeyMap *keyMap{};
     int _max_column;
@@ -46,6 +49,8 @@ private:
     point_value_t _map[81];
 
     std::vector<CCommand> _vCommand;
+
+    std::chrono::steady_clock::time_point _start_time;
 };
 
 #endif
