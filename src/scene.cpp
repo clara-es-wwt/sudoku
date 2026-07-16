@@ -5,7 +5,9 @@
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -27,9 +29,43 @@ CScene::~CScene()
     if(keyMap) delete keyMap;
 }
 
+// Print a single timer line: blank space then the elapsed time right-aligned.
+// The board is 37 characters wide (9 cells × 4 chars + 1 corner), so we
+// position the "⏱ MM:SS" label flush to the right of that width.
+void CScene::printTimerLine() const
+{
+    int64_t total = _timer.elapsedSeconds();
+    int64_t mins  = total / 60;
+    int64_t secs  = total % 60;
+
+    std::ostringstream oss;
+    oss << "\u23F1 "
+        << std::setfill('0') << std::setw(2) << mins
+        << ":"
+        << std::setfill('0') << std::setw(2) << secs;
+    std::string label = oss.str();
+
+    // Board visible width: 9*(1+3) + 1 = 37 columns.
+    // Each multi-byte CORNER/LINE glyph is 3 bytes but 1 terminal column.
+    // The timer label is pure ASCII (⏱ is 3 bytes but 1 column wide).
+    // We want the label right-aligned inside 37 columns.
+    const int boardWidth = 37;
+    int labelWidth = static_cast<int>(label.size()) - 2; // subtract 2 extra UTF-8 bytes for ⏱
+    int padding = boardWidth - labelWidth;
+    if (padding < 0) padding = 0;
+
+    std::cout << Color::Modifier(Color::BOLD, Color::BG_DEFAULT, Color::FG_CYAN)
+              << std::string(padding, ' ')
+              << label
+              << Color::Modifier()
+              << std::endl;
+}
+
 void CScene::show() const
 {
     cls();
+
+    printTimerLine();
 
     printUnderline();
 
@@ -215,6 +251,9 @@ bool CScene::save(const char *filename) {
            << command.getCurValue() << std::endl;
     }
 
+    // save elapsed time so a loaded game continues from the right time
+    fs << _timer.elapsedSeconds() << std::endl;
+
     fs.close();
     return true;
 }
@@ -247,11 +286,20 @@ bool CScene::load(const char *filename) {
         fs >> point.x >> point.y >> preValue >> curValue;
         _vCommand.emplace_back(this, point, preValue, curValue);
     }
+
+    // load elapsed time (optional: older save files without this field are
+    // handled gracefully — the timer simply starts from 0)
+    int64_t savedSeconds = 0;
+    if (fs >> savedSeconds) {
+        _timer.setOffset(savedSeconds);
+    }
+
     return true;
 }
 
 void CScene::play()
 {
+    _timer.start();
     show();
 
     char key = '\0';
@@ -450,10 +498,9 @@ void CScene::generate()
 bool CScene::setPointValue(const point_t &stPoint, const int nValue)
 {
     auto point = _map[stPoint.x + stPoint.y * 9];
-    if (State::ERASED == point.state)
+    if (point.state == State::ERASED)
     {
-        _cur_point = stPoint;
-        setValue(nValue);
+        setValue(stPoint, nValue);
         return true;
     }
     else

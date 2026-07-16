@@ -6,6 +6,7 @@
 #include "common.h"
 #include "block.h"
 #include "command.h"
+#include "timer.h"
 
 //数独场景类
 class CScene
@@ -35,6 +36,7 @@ class CScene
     void setValue(const int);
     void setValue(const point_t &, const int);
     void printUnderline(int line_no = -1) const;
+    void printTimerLine() const;
 
 private:
     KeyMap *keyMap{};
@@ -46,6 +48,7 @@ private:
     point_value_t _map[81];
 
     std::vector<CCommand> _vCommand;
+    Timer _timer;
 };
 
 #endif
